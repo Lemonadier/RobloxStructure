@@ -24,3 +24,13 @@ export interface Script {
 export interface ScriptData {
   [id: string]: Script;
 }
+
+export interface Line {
+  key: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  sourceId: string;
+  targetId: string;
+}

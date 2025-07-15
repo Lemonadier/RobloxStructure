@@ -1,64 +1,15 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { ScriptData } from '../types';
+import React from 'react';
+import { ScriptData, Line } from '../types';
 
 interface ConnectionLinesProps {
+  lines: Line[];
   scriptData: ScriptData;
   hoveredId: string | null;
-  cardRefs: Map<string, HTMLDivElement | null>;
-  mainRef: React.RefObject<HTMLDivElement>;
 }
 
-interface Line {
-  key: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  sourceId: string;
-  targetId: string;
-}
-
-const ConnectionLines: React.FC<ConnectionLinesProps> = ({ scriptData, hoveredId, cardRefs, mainRef }) => {
-  const [lines, setLines] = useState<Line[]>([]);
-
-  useLayoutEffect(() => {
-    const calculateLines = () => {
-      const newLines: Line[] = [];
-      if (!mainRef.current) return;
-      
-      const mainRect = mainRef.current.getBoundingClientRect();
-
-      for (const sourceId in scriptData) {
-        const sourceScript = scriptData[sourceId];
-        const sourceElem = cardRefs.get(sourceId);
-
-        if (sourceElem && sourceScript.connections) {
-          const sourceRect = sourceElem.getBoundingClientRect();
-          const sourceX = sourceRect.left - mainRect.left + sourceRect.width / 2;
-          const sourceY = sourceRect.top - mainRect.top + sourceRect.height / 2;
-
-          sourceScript.connections.forEach(targetId => {
-            const targetElem = cardRefs.get(targetId);
-            if (targetElem) {
-              const targetRect = targetElem.getBoundingClientRect();
-              const targetX = targetRect.left - mainRect.left + targetRect.width / 2;
-              const targetY = targetRect.top - mainRect.top + targetRect.height / 2;
-              newLines.push({ key: `${sourceId}-${targetId}`, x1: sourceX, y1: sourceY, x2: targetX, y2: targetY, sourceId, targetId });
-            }
-          });
-        }
-      }
-      setLines(newLines);
-    };
-
-    calculateLines();
-    
-    window.addEventListener('resize', calculateLines);
-    return () => window.removeEventListener('resize', calculateLines);
-  }, [scriptData, cardRefs, mainRef]);
-
+const ConnectionLines: React.FC<ConnectionLinesProps> = ({ lines, scriptData, hoveredId }) => {
   const getColorVar = (id: string | null) => {
-    if (!id) return '--color-accent-blue';
+    if (!id) return '--color-border';
     const type = scriptData[id]?.type;
     switch (type) {
       case 'Client': return '--color-accent-blue';
