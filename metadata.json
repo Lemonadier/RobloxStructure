@@ -1,0 +1,5 @@
+{
+  "name": "Game Structure Visualizer",
+  "description": "An application to visualize game structures with an interactive diagram.",
+  "requestFramePermissions": []
+}
